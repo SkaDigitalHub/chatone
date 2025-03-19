@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Real-Time Chat App</title>
+  <title>GRWC Chat Corner</title>
   <style>
     /* General Styles */
     body {
@@ -16,6 +16,16 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Glass Morphism Effect */
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
 
     /* Main Container */
@@ -37,64 +47,93 @@
     }
 
     .user-avatar {
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
-      background-color: #007bff;
+      background-color: rgba(0, 123, 255, 0.8);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
+      font-size: 14px;
       font-weight: bold;
       color: #fff;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     .user-avatar:hover {
       transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     }
 
     .user-avatar.group {
-      background-color: #28a745;
+      background-color: rgba(40, 167, 69, 0.8);
     }
 
     /* Chat Window */
     #chat-window {
       flex: 1;
       height: 600px;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
       padding: 20px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Date Header */
+    .date-header {
+      text-align: center;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 10px;
+      animation: fadeIn 0.5s ease;
     }
 
     /* Message Bubbles */
-    #chat-window div {
+    #chat-window div.message {
       max-width: 80%;
       padding: 10px 15px;
       border-radius: 15px;
       font-size: 14px;
       line-height: 1.5;
       position: relative;
+      backdrop-filter: blur(5px);
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     /* Sender's Messages */
     #chat-window div[data-sender="true"] {
-      background-color: #007bff;
+      background-color: rgba(0, 123, 255, 0.8);
       color: #fff;
       align-self: flex-end;
     }
 
     /* Receiver's Messages */
     #chat-window div[data-sender="false"] {
-      background-color: #e9ecef;
+      background-color: rgba(233, 236, 239, 0.8);
       color: #333;
       align-self: flex-start;
+    }
+
+    /* Message Time */
+    .message-time {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 5px;
+      text-align: right;
     }
 
     /* Message Input Area */
@@ -108,31 +147,43 @@
     #message {
       flex: 1;
       padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      font-size: 14px;
       outline: none;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+      color: #fff;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #message::placeholder {
+      color: rgba(255, 255, 255, 0.7);
     }
 
     #message:focus {
-      border-color: #007bff;
+      border-color: rgba(0, 123, 255, 0.8);
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
     }
 
     /* Send Button */
     button {
-      padding: 8px 16px;
-      background-color: #007bff;
+      padding: 10px 20px;
+      background-color: rgba(0, 123, 255, 0.8);
       color: #fff;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 14px;
-      transition: background-color 0.3s ease, transform 0.2s ease;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: rgba(0, 86, 179, 0.8);
       transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     }
 
     /* Scrollbar Styling */
@@ -141,17 +192,17 @@
     }
 
     #chat-window::-webkit-scrollbar-track {
-      background: #f1f1f1;
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
     }
 
     #chat-window::-webkit-scrollbar-thumb {
-      background: #888;
+      background: rgba(255, 255, 255, 0.3);
       border-radius: 10px;
     }
 
     #chat-window::-webkit-scrollbar-thumb:hover {
-      background: #555;
+      background: rgba(255, 255, 255, 0.5);
     }
 
     /* Theme Selector */
@@ -163,121 +214,22 @@
     }
 
     .theme-dot {
-      width: 12px;
-      height: 12px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       cursor: pointer;
       border: 2px solid transparent;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     .theme-dot:hover {
       transform: scale(1.2);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     }
 
     .theme-dot.active {
-      border-color: #000;
-    }
-
-    /* Theme Colors */
-    body.theme-default {
-      background-color: #f4f4f9;
-    }
-
-    body.theme-default #chat-window {
-      background-color: #fff;
-    }
-
-    body.theme-default button {
-      background-color: #007bff;
-    }
-
-    body.theme-default button:hover {
-      background-color: #0056b3;
-    }
-
-    body.theme-blue {
-      background-color: #e3f2fd;
-    }
-
-    body.theme-blue #chat-window {
-      background-color: #bbdefb;
-    }
-
-    body.theme-blue button {
-      background-color: #1976d2;
-    }
-
-    body.theme-blue button:hover {
-      background-color: #1565c0;
-    }
-
-    body.theme-green {
-      background-color: #e8f5e9;
-    }
-
-    body.theme-green #chat-window {
-      background-color: #c8e6c9;
-    }
-
-    body.theme-green button {
-      background-color: #388e3c;
-    }
-
-    body.theme-green button:hover {
-      background-color: #2e7d32;
-    }
-
-    body.theme-purple {
-      background-color: #f3e5f5;
-    }
-
-    body.theme-purple #chat-window {
-      background-color: #e1bee7;
-    }
-
-    body.theme-purple button {
-      background-color: #7b1fa2;
-    }
-
-    body.theme-purple button:hover {
-      background-color: #6a1b9a;
-    }
-
-    body.theme-dark {
-      background-color: #333;
-      color: #fff;
-    }
-
-    body.theme-dark #chat-window {
-      background-color: #444;
-      color: #fff;
-    }
-
-    body.theme-dark #message {
-      background-color: #555;
-      color: #fff;
-      border-color: #666;
-    }
-
-    body.theme-dark #message:focus {
-      border-color: #007bff;
-    }
-
-    body.theme-dark button {
-      background-color: #28a745;
-    }
-
-    body.theme-dark button:hover {
-      background-color: #218838;
-    }
-
-    body.theme-dark .user-avatar {
-      background-color: #28a745;
-    }
-
-    body.theme-dark .user-avatar.group {
-      background-color: #007bff;
+      border-color: rgba(255, 255, 255, 0.8);
     }
 
     /* Responsive Design */
@@ -302,6 +254,27 @@
         width: 95%;
       }
     }
+
+    /* Theme-specific Styles */
+    .theme-default {
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+    }
+
+    .theme-blue {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+    }
+
+    .theme-green {
+      background: linear-gradient(135deg, #2c3e50, #4ca1af);
+    }
+
+    .theme-purple {
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+    }
+
+    .theme-dark {
+      background: linear-gradient(135deg, #333, #000);
+    }
   </style>
 </head>
 <body class="theme-default">
@@ -315,7 +288,7 @@
     <!-- Chat Window and Input -->
     <div style="flex: 1;">
       <!-- Chat Window -->
-      <div id="chat-window"></div>
+      <div id="chat-window" class="glass"></div>
 
       <!-- Message Input -->
       <div id="message-input">
@@ -390,6 +363,19 @@
       });
     });
 
+    // Function to format date with month name
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      const day = date.getDate();
+      const month = monthNames[date.getMonth()];
+      const year = date.getFullYear();
+      return `${month} ${day}, ${year}`;
+    }
+
     function fetchMessages() {
       if (!receiver) return; // Don't fetch messages if no receiver is selected
 
@@ -397,15 +383,33 @@
         .then(response => response.json())
         .then(data => {
           chatWindow.innerHTML = '';
+          let lastDate = null;
+
           data.forEach(row => {
             if (
               (row[1] === sender && row[2] === receiver) || // Direct messages
               (row[1] === receiver && row[2] === sender) || // Direct messages
               (row[2] === 'GROUP' && receiver === 'GROUP') // Group messages
             ) {
+              const messageDate = formatDate(row[0]);
+              if (messageDate !== lastDate) {
+                const dateHeader = document.createElement('div');
+                dateHeader.className = 'date-header';
+                dateHeader.textContent = messageDate;
+                chatWindow.appendChild(dateHeader);
+                lastDate = messageDate;
+              }
+
               const message = document.createElement('div');
+              message.className = 'message';
               message.textContent = `${row[1]}: ${row[3]}`;
               message.setAttribute('data-sender', row[1] === sender); // Add data-sender attribute
+
+              const messageTime = document.createElement('div');
+              messageTime.className = 'message-time';
+              messageTime.textContent = new Date(row[0]).toLocaleTimeString();
+              message.appendChild(messageTime);
+
               chatWindow.appendChild(message);
             }
           });
@@ -448,4 +452,4 @@
     setInterval(fetchMessages, 1000);
   </script>
 </body>
-</html
+</html>
